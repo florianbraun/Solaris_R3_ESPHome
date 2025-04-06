@@ -1,0 +1,129 @@
+esphome:
+  name: esp32-solaris
+  friendly_name: ESP32_Solaris
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  baud_rate: 115200
+  tx_buffer_size: 512
+  deassert_rts_dtr: false
+  hardware_uart: UART0
+  level: DEBUG
+  logs: {}
+
+mqtt:
+  broker: !secret mqtt_server
+  username: !secret mqtt_user
+  password: !secret mqtt_secret
+
+uart:
+  id: uart_2
+  rx_pin: GPIO16
+  baud_rate: 19200
+
+globals:
+  - id: uart_buffer
+    type: std::string
+    initial_value: ""
+
+text_sensor:
+  - platform: template
+    name: "Manual mode"
+    id: data_part_0
+  - platform: template
+    name: "Unknown value"
+    id: data_part_1
+  - platform: template
+    name: "P1 State"
+    id: data_part_2
+  - platform: template
+    name: "P2 - Power"
+    id: data_part_3
+  - platform: template
+    name: "TK - Temp Collector"
+    id: data_part_4
+  - platform: template
+    name: "TR - Temp Reflow"
+    id: data_part_5
+  - platform: template
+    name: "TS - Temp Storage"
+    id: data_part_6
+  - platform: template
+    name: "TV - Temp Flow"
+    id: data_part_7
+  - platform: template
+    name: "Water Flow"
+    id: data_part_8
+
+
+interval:
+  - interval: 45000ms # 45 sec
+    then:
+      - lambda: |-
+          while (id(uart_2).available()) {
+            uint8_t byte;
+            if (id(uart_2).read_byte(&byte)) {
+              if (byte == '\n') {
+                ESP_LOGD("UART", "Received Data: %s", id(uart_buffer).c_str());
+                
+                // Split the buffer into parts
+                size_t start = 0;
+                size_t end = id(uart_buffer).find(';');
+                size_t index = 0;
+
+                while (end != std::string::npos) {
+                  std::string value = id(uart_buffer).substr(start, end - start);
+                  if (index == 0) {
+                    id(data_part_0).publish_state(value);
+                  } else if (index == 1) {
+                    id(data_part_1).publish_state(value);
+                  } else if (index == 2) {
+                    id(data_part_2).publish_state(value);
+                  } else if (index == 3) {
+                    id(data_part_3).publish_state(value);
+                  } else if (index == 4) {
+                    id(data_part_4).publish_state(value);
+                  } else if (index == 5) {
+                    id(data_part_5).publish_state(value);
+                  } else if (index == 6) {
+                    id(data_part_6).publish_state(value);
+                  } else if (index == 7) {
+                    id(data_part_7).publish_state(value);
+                  } else if (index == 8) {
+                    id(data_part_8).publish_state(value);
+                  }
+
+                  start = end + 1;
+                  end = id(uart_buffer).find(';', start);
+                  index++;
+                }
+
+                id(uart_buffer).clear();
+              } else {
+                id(uart_buffer) += (char)byte;
+              }
+            }
+          }
+
+
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esp32_solaris_api_key
+
+ota:
+  - platform: esphome
+    password: !secret esp32_solaris_ota_key
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+    
