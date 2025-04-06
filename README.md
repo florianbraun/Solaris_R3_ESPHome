@@ -6,3 +6,6 @@ As the custom_component is deprecated in HA / ESPHome, I´ve chosen a different 
 You´ll need a MQTT server for that too.
 
 ![image](https://github.com/user-attachments/assets/e354bf9e-552b-409a-a716-cd8ae820599b)
+
+![image](https://github.com/user-attachments/assets/9e57cf50-5280-4b5e-bde3-9c52e92329d3)
+
