@@ -5,3 +5,4 @@ For the details on the cable connection, please see the repo of juanferrla.
 As the custom_component is deprecated in HA / ESPHome, I´ve chosen a different way to send the data to HA.
 You´ll need a MQTT server for that too.
 
+![image](https://github.com/user-attachments/assets/e354bf9e-552b-409a-a716-cd8ae820599b)
