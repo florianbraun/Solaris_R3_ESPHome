@@ -9,3 +9,4 @@ You´ll need a MQTT server for that too.
 
 ![image](https://github.com/user-attachments/assets/9e57cf50-5280-4b5e-bde3-9c52e92329d3)
 
+![image](https://github.com/user-attachments/assets/fea378cb-9c7c-4aef-9358-92a8f6d5898f)
